@@ -10,10 +10,19 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
+import { Connection } from '../connection/connection';
 
 @Controller('/api/users')
 export class UserController {
-  constructor(private userService: UserService) {} // dependency injection & will be a singleton
+  constructor(
+    private userService: UserService,
+    private connection: Connection, // clas provider : can change according to user.module.ts
+  ) {} // dependency injection & will be a singleton
+
+  @Get('/connection')
+  async getConnection(): Promise<string> {
+    return this.connection.getName();
+  }
 
   @Get('/hello')
   sayHello(@Query('name') name: string): string {
