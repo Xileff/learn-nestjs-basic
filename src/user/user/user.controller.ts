@@ -17,6 +17,7 @@ import { UserRepository } from '../user-repository/user-repository';
 
 @Controller('/api/users')
 export class UserController {
+  // Dependency Injection thru constructor mechanism :
   // All properties instantiated as singletons and provided by 'Provider' in user.module.ts
   constructor(
     private userService: UserService,

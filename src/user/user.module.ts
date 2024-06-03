@@ -14,7 +14,7 @@ import {
 
 @Module({
   controllers: [UserController],
-  // Providers -> for dependency injection
+  // Providers -> to inject object of a Provider class as a dependency to other objects (Controller, or others)... Dependency Injection concept
   providers: [
     // 1. Standard Provider
     UserService,
