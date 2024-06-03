@@ -3,6 +3,7 @@ import {
   Get,
   Header,
   HttpCode,
+  Inject,
   Post,
   Query,
   Req,
@@ -11,16 +12,25 @@ import {
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { Connection } from '../connection/connection';
+import { MailService } from '../mail/mail.service';
+import { UserRepository } from '../user-repository/user-repository';
 
 @Controller('/api/users')
 export class UserController {
+  // All properties instantiated as singletons and provided by 'Provider' in user.module.ts
   constructor(
     private userService: UserService,
-    private connection: Connection, // clas provider : can change according to user.module.ts
-  ) {} // dependency injection & will be a singleton
+    private connection: Connection,
+    private mailService: MailService,
+    private userRepository: UserRepository,
+    @Inject('EmailService') private emailService: MailService,
+  ) {}
 
   @Get('/connection')
   async getConnection(): Promise<string> {
+    this.mailService.send();
+    this.userRepository.save();
+    this.emailService.send();
     return this.connection.getName();
   }
 
