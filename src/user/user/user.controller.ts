@@ -9,9 +9,17 @@ import {
   Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { UserService } from './user.service';
 
 @Controller('/api/users')
 export class UserController {
+  constructor(private userService: UserService) {} // dependency injection & will be a singleton
+
+  @Get('/hello')
+  sayHello(@Query('name') name: string): string {
+    return this.userService.sayHello(name);
+  }
+
   @Get('/view/hello')
   viewHello(@Query('name') name: string, @Res() response: Response) {
     // express.Res
@@ -39,14 +47,6 @@ export class UserController {
     return {
       hello: 'world',
     };
-  }
-
-  @Get('/hello')
-  sayHello(
-    @Query('first_name') firstName: string,
-    @Query('last_name') lastName: string,
-  ): string {
-    return `Hello ${firstName} ${lastName}`;
   }
 
   @Get('/sample')
