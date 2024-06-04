@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule], // module sharing + provider sharing
+  imports: [PrismaModule], // module sharing + provider sharing (needed if module not global)
   controllers: [UserController],
   // Providers -> to inject object of a Provider class as a dependency to other objects (Controller, or others)... Dependency Injection concept
   providers: [
