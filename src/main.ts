@@ -17,6 +17,8 @@ async function bootstrap() {
   app.set('view engine', 'html');
   app.engine('html', mustache());
 
+  app.enableShutdownHooks();
+
   const config = app.get(ConfigService);
   await app.listen(config.get('PORT'));
 }
