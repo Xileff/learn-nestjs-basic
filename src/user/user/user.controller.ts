@@ -12,6 +12,7 @@ import {
   Req,
   Res,
   UseFilters,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
@@ -30,6 +31,7 @@ import {
 import { ValidationPipe } from 'src/validation/validation.pipe';
 import { TimeInterceptor } from 'src/time/time.interceptor';
 import { Auth } from 'src/auth/auth.decorator';
+import { RoleGuard } from 'src/role/role.guard';
 
 @Controller('/api/users')
 export class UserController {
@@ -45,10 +47,11 @@ export class UserController {
   ) {}
 
   @Get('/get-current')
+  @UseGuards(new RoleGuard(['Admin', 'Operator'])) // cek role dari req.user
   current(@Auth() user: User): Record<string, any> {
-    // console.info('User : ', JSON.stringify(user));
+    // @Auth() dapet user dari req.user
     return {
-      data: `Hello authenticated user : ${user.first_name}`,
+      data: `Hello ${user.role} : ${user.first_name}`,
     };
   }
 
