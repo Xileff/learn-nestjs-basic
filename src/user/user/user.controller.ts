@@ -29,6 +29,7 @@ import {
 } from 'src/model/login.model';
 import { ValidationPipe } from 'src/validation/validation.pipe';
 import { TimeInterceptor } from 'src/time/time.interceptor';
+import { Auth } from 'src/auth/auth.decorator';
 
 @Controller('/api/users')
 export class UserController {
@@ -42,6 +43,14 @@ export class UserController {
     @Inject('EmailService') private emailService: MailService,
     private memberService: MemberService,
   ) {}
+
+  @Get('/get-current')
+  current(@Auth() user: User): Record<string, any> {
+    // console.info('User : ', JSON.stringify(user));
+    return {
+      data: `Hello authenticated user : ${user.first_name}`,
+    };
+  }
 
   // UsePipes for validation
   @Post('/login')
@@ -129,8 +138,8 @@ export class UserController {
     return 'GET';
   }
 
-  @Get('/:id') // express.Req
-  getRequest(@Req() request: Request): string {
-    return `Id : ${request.params.id}`;
-  }
+  // @Get('/:id') // express.Req
+  // getRequest(@Req() request: Request): string {
+  //   return `Id : ${request.params.id}`;
+  // }
 }
