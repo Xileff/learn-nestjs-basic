@@ -2,6 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import * as httpMock from 'node-mocks-http';
 import { UserService } from './user.service';
+import {
+  Connection,
+  MongoDBConnection,
+  MySQLConnection,
+} from '../connection/connection';
+import { MailService, mailService } from '../mail/mail.service';
+import {
+  UserRepository,
+  createUserRepository,
+} from '../user-repository/user-repository';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -9,7 +19,30 @@ describe('UserController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController], // unit test, only import UserController
-      providers: [UserService], // dependency injection
+      providers: [
+        // For dependency injection
+        UserService,
+        {
+          provide: Connection,
+          useClass:
+            process.env.DATABASE === 'MySQL'
+              ? MySQLConnection
+              : MongoDBConnection,
+        },
+        {
+          provide: MailService,
+          useValue: mailService,
+        },
+        {
+          provide: 'EmailService',
+          useValue: mailService,
+        },
+        {
+          provide: UserRepository,
+          useFactory: createUserRepository,
+          inject: [Connection],
+        },
+      ],
     }).compile();
 
     controller = module.get<UserController>(UserController);
