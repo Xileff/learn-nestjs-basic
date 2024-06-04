@@ -6,12 +6,14 @@ import {
   Connection,
   MongoDBConnection,
   MySQLConnection,
+  createConnection,
 } from '../connection/connection';
 import { MailService, mailService } from '../mail/mail.service';
 import {
   UserRepository,
   createUserRepository,
 } from '../user-repository/user-repository';
+import { ConfigService } from '@nestjs/config';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -24,10 +26,13 @@ describe('UserController', () => {
         UserService,
         {
           provide: Connection,
-          useClass:
-            process.env.DATABASE === 'MySQL'
-              ? MySQLConnection
-              : MongoDBConnection,
+          useFactory: createConnection,
+          inject: [ConfigService],
+        },
+        {
+          provide: UserRepository,
+          useFactory: createUserRepository,
+          inject: [Connection],
         },
         {
           provide: MailService,
@@ -36,11 +41,6 @@ describe('UserController', () => {
         {
           provide: 'EmailService',
           useValue: mailService,
-        },
-        {
-          provide: UserRepository,
-          useFactory: createUserRepository,
-          inject: [Connection],
         },
       ],
     }).compile();
