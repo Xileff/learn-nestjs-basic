@@ -12,6 +12,7 @@ import {
   Req,
   Res,
   UseFilters,
+  UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -27,6 +28,7 @@ import {
   loginUserRequestValidation,
 } from 'src/model/login.model';
 import { ValidationPipe } from 'src/validation/validation.pipe';
+import { TimeInterceptor } from 'src/time/time.interceptor';
 
 @Controller('/api/users')
 export class UserController {
@@ -42,12 +44,16 @@ export class UserController {
   ) {}
 
   // UsePipes for validation
+  @Post('/login')
   @UsePipes(new ValidationPipe(loginUserRequestValidation))
   @UseFilters(ValidationFilter) // to catch ZodError
-  @Post('/login')
+  @UseInterceptors(TimeInterceptor)
+  @Header('Content-Type', 'application/json')
   login(@Query('name') name: string, @Body() request: LoginUserRequest) {
-    return `Query param name : ${name}
-            Request body username : ${request.username}`;
+    return {
+      queryUsername: name,
+      bodyUsername: request.username,
+    };
   }
 
   @Get('/pipe')
