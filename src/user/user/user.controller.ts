@@ -1,14 +1,18 @@
 import {
+  Body,
   Controller,
   Get,
   Header,
   HttpCode,
   HttpException,
   Inject,
+  ParseIntPipe,
+  Post,
   Query,
   Req,
   Res,
   UseFilters,
+  UsePipes,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
@@ -18,6 +22,11 @@ import { UserRepository } from '../user-repository/user-repository';
 import { MemberService } from '../member/member.service';
 import { User } from '@prisma/client';
 import { ValidationFilter } from 'src/validation/validation.filter';
+import {
+  LoginUserRequest,
+  loginUserRequestValidation,
+} from 'src/model/login.model';
+import { ValidationPipe } from 'src/validation/validation.pipe';
 
 @Controller('/api/users')
 export class UserController {
@@ -31,6 +40,20 @@ export class UserController {
     @Inject('EmailService') private emailService: MailService,
     private memberService: MemberService,
   ) {}
+
+  // UsePipes for validation
+  @UsePipes(new ValidationPipe(loginUserRequestValidation))
+  @UseFilters(ValidationFilter) // to catch ZodError
+  @Post('/login')
+  login(@Query('name') name: string, @Body() request: LoginUserRequest) {
+    return `Query param name : ${name}
+            Request body username : ${request.username}`;
+  }
+
+  @Get('/pipe')
+  getById(@Query('id', ParseIntPipe) id: number) {
+    return `Number * 10 = ${id * 10}`;
+  }
 
   @Get('/connection')
   async getConnection(): Promise<string> {
