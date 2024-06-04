@@ -32,6 +32,7 @@ import { ValidationPipe } from 'src/validation/validation.pipe';
 import { TimeInterceptor } from 'src/time/time.interceptor';
 import { Auth } from 'src/auth/auth.decorator';
 import { RoleGuard } from 'src/role/role.guard';
+import { Roles } from 'src/role/role.decorator';
 
 @Controller('/api/users')
 export class UserController {
@@ -47,7 +48,8 @@ export class UserController {
   ) {}
 
   @Get('/get-current')
-  @UseGuards(new RoleGuard(['Admin', 'Operator'])) // cek role dari req.user
+  @UseGuards(RoleGuard)
+  @Roles(['Admin', 'Operator'])
   current(@Auth() user: User): Record<string, any> {
     // @Auth() dapet user dari req.user
     return {
